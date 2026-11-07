@@ -20,7 +20,7 @@ test('order rejects unavailable products atomically', async () => {
   const app = buildApp({ repository: testRepository })
   const registration = await app.inject({ method: 'POST', url: '/api/users', payload: { email: 'x@example.com', password: 'secret1' } })
   const cookie = registration.headers['set-cookie'].split(';')[0]
-  const response = await app.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '1', quantity: 1 }, { productId: '4', quantity: 1 }], shipping: { method: 'pickup' } } })
+  const response = await app.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '1', quantity: 1 }, { productId: '4', quantity: 1 }], shipping: { method: 'pickup', recipientName: 'Buyer', phone: '123' } } })
   assert.equal(response.statusCode, 400)
   assert.deepEqual(response.json().unavailableProductIds, ['4'])
   assert.equal((await app.inject({ method: 'GET', url: '/api/orders', headers: { cookie } })).json().length, 0)

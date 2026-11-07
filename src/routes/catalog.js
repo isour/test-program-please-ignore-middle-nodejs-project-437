@@ -40,6 +40,9 @@ export default async function catalogRoutes(app) {
     for (const key of ['priceMin', 'priceMax']) {
       if (query[key] !== undefined && (!parseInteger(query[key]) || Number(query[key]) < 0)) return problem(reply, 400, 'validation-error')
     }
+    if (query.priceMin !== undefined && query.priceMax !== undefined && Number(query.priceMin) > Number(query.priceMax)) return problem(reply, 400, 'validation-error')
+    if (query.category !== undefined && !/^[a-z0-9-]+$/.test(String(query.category))) return problem(reply, 400, 'validation-error')
+    if (query.q !== undefined && String(query.q).length > 100) return problem(reply, 400, 'validation-error')
     if (query.available !== undefined && !['true', 'false'].includes(String(query.available))) return problem(reply, 400, 'validation-error')
     try {
       const [categories, products] = await Promise.all([app.repository.categories(), app.repository.products()])

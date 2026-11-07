@@ -28,7 +28,7 @@ test('order validates delivery address and invalid quantities', async () => {
   const cookie = registration.headers['set-cookie'].split(';')[0]
   let response = await server.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '1', quantity: 1 }], shipping: { method: 'delivery' } } })
   assert.equal(response.json().type, '/problems/address-required')
-  response = await server.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '1', quantity: 0 }], shipping: { method: 'pickup' } } })
+  response = await server.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '4', quantity: 0 }], shipping: { method: 'pickup' } } })
   assert.equal(response.json().type, '/problems/unavailable-items')
   await server.close()
 })

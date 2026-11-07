@@ -38,6 +38,6 @@ test('order calculates total and isolates user', async () => {
   const { cookie } = await register(app)
   const response = await app.inject({ method: 'POST', url: '/api/orders', headers: { cookie }, payload: { items: [{ productId: '1', quantity: 2 }], shipping: { method: 'pickup', recipientName: 'Buyer', phone: '123' } } })
   assert.equal(response.statusCode, 201)
-  assert.equal(response.json().total, 179980)
+  assert.equal(response.json().total.amount, 179980)
   await app.close()
 })
