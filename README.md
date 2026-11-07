@@ -48,7 +48,33 @@ npm install
 npm start
 ```
 
-API доступен на `http://localhost:8080`. Для PostgreSQL задайте `DATABASE_URL`.
+API доступен локально на `http://localhost:8080` и в production на https://test-program-please-ignore-middle-nodejs.onrender.com/. Для PostgreSQL задайте `DATABASE_URL`.
+
+## Production
+
+- URL приложения: https://test-program-please-ignore-middle-nodejs.onrender.com/
+- Health check: https://test-program-please-ignore-middle-nodejs.onrender.com/api/health
+
+## Sentry
+
+1. Создайте проект Node.js в [Sentry](https://sentry.io/).
+2. Откройте **Settings → Projects → ваш проект → Client Keys (DSN)** и скопируйте DSN.
+3. В Render откройте **Web Service → Environment → Environment Variables**.
+4. Добавьте переменную:
+
+```text
+SENTRY_DSN=https://...@o....ingest.sentry.io/...
+```
+
+5. Сохраните изменения и выполните redeploy.
+
+Приложение читает `SENTRY_DSN` из окружения. Если переменная не задана, приложение продолжает работать без отправки событий в Sentry. В production не добавляйте DSN в исходники и не коммитьте его в Git.
+
+Проверка доступности:
+
+```bash
+curl https://test-program-please-ignore-middle-nodejs.onrender.com/api/health
+```
 
 ## CI and deployment
 
