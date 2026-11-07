@@ -4,7 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Интернет-магазин комплектующих</title>
-    <script src="https://js-de.sentry-cdn.com/df41fecadd3ecc069e8238444af676cc.min.js" crossorigin="anonymous"></script>
+    <script src="https://browser.sentry-cdn.com/10.22.0/bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+      Sentry.init({
+        dsn: 'https://df41fecadd3ecc069e8238444af676cc@o4512389763235840.ingest.de.sentry.io/4512389799542864',
+        integrations: [],
+        tracesSampleRate: 1.0
+      })
+    </script>
     <script>
       window.addEventListener('error', event => {
         if (window.Sentry) window.Sentry.captureException(event.error || new Error(event.message))
