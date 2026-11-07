@@ -1,0 +1,65 @@
+<div class="m_d08caa0 mantine-Typography-root"><h2 id="heading-2-1">Деплой на Render</h2>
+    <p>Магазин работает локально и собирается в образ — осталось выложить его в интернет и включить автоматический деплой: подключаете репозиторий один раз, и дальше каждый пуш пересобирает и перезапускает приложение.</p>
+    <p>Образ у вас уже есть — тот же <em>Dockerfile</em>, который вы написали на шаге про фронтенд и контейнер, и по которому вас проверяют. Render соберёт его сам, никакой второй сборки для прода не нужно.</p>
+    <h3 id="heading-3-2">Ссылки</h3>
+    <ul>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://render.com/" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Render</a> — сервис, на который деплоим</li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://ru.hexlet.io/blog/posts/kak-deploit-prilozhenie-na-render-gayd-dlya-frontenderov-i-bekenderov" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Как деплоить приложение на Render — гайд Хекслета</a></li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://render.com/docs/web-services" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Render: Web Services</a></li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://render.com/docs/docker" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Render: деплой из Dockerfile</a></li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://render.com/docs/postgresql-creating-connecting" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Render: PostgreSQL</a></li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://render.com/docs/configure-environment-variables" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Render: переменные окружения</a></li>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://12factor.net/ru/" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">Приложение двенадцати факторов</a></li>
+    </ul>
+    <h3 id="heading-3-3">Требования</h3>
+    <ul>
+    <li>Приложение развёрнуто на Render как <strong>Web Service</strong> и доступно по публичной HTTPS-ссылке.</li>
+    <li>База — <strong>PostgreSQL на Render</strong>, адрес приходит приложению через <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>DATABASE_URL</span></span></code>.</li>
+    <li>Включён <strong>Auto-Deploy</strong>: пуш в основную ветку приводит к новому деплою.</li>
+    <li>Порт приложение берёт из <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>PORT</span></span></code> — его задаёт Render, своё значение указывать нельзя.</li>
+    <li>Ссылка на развёрнутое приложение есть в <em>README.md</em>.</li>
+    </ul>
+    <h3 id="heading-3-4">Что уже сделано образом</h3>
+    <p>Три вещи, которые делают деплой возможным, вы заложили в контракт запуска раньше, и здесь они работают сами:</p>
+    <ul>
+    <li><strong>порт из <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>PORT</span></span></code>.</strong> Render задаёт его сам и меняет между перезапусками. Приложение, слушающее зашитый номер, останется в статусе ожидания: платформа не увидит открытый порт;</li>
+    <li><strong>адрес базы из <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>DATABASE_URL</span></span></code>.</strong> У Render это внутренняя строка подключения, её вы подставите переменной окружения;</li>
+    <li><strong>миграции и заливка при запуске контейнера, а не при сборке образа.</strong> На сборке базы нет; обращение к ней сломало бы деплой.</li>
+    </ul>
+    <h3 id="heading-3-5">Задачи</h3>
+    <ol>
+    <li>
+    <p>Зарегистрируйтесь на Render и подключите репозиторий с проектом.</p>
+    </li>
+    <li>
+    <p>Создайте <strong>PostgreSQL</strong>: <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>New</span></span></code> → <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>Postgres</span></span></code>, план Free. Скопируйте внутреннюю строку подключения.</p>
+    </li>
+    <li>
+    <p>Создайте <strong>Web Service</strong> из репозитория: язык — <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>Docker</span></span></code>, план Free. Добавьте переменную окружения <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>DATABASE_URL</span></span></code> со строкой подключения к вашей базе.</p>
+    </li>
+    <li>
+    <p>Убедитесь, что включён <strong>Auto-Deploy</strong>.</p>
+    </li>
+    <li>
+    <p>Дождитесь деплоя и проверьте живой сервис:</p>
+    <div class=""><div class="m_e597c321 mantine-CodeHighlight-codeHighlight" dir="ltr" style="margin-bottom: var(--mantine-spacing-lg);"><div class="m_be7e9c9c mantine-CodeHighlight-controls"><button class="mantine-focus-auto mantine-active m_d498bab7 mantine-CodeHighlight-control m_8d3f4000 mantine-ActionIcon-root m_87cf2631 mantine-UnstyledButton-root" data-variant="none" type="button" aria-label="Copy code" style="--ai-bg: transparent; --ai-hover: transparent; --ai-color: inherit; --ai-bd: none;"><span class="m_8d3afb97 mantine-ActionIcon-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path><path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path></svg></span></button></div><div class="m_f744fd40 mantine-CodeHighlight-scrollarea m_d57069b5 mantine-ScrollArea-root" dir="ltr" style="--scrollarea-scrollbar-size: calc(0.25rem * var(--mantine-scale)); --sa-corner-width: 0px; --sa-corner-height: 0px;"><div class="m_c0783ff9 mantine-ScrollArea-viewport" data-scrollbars="xy" data-scrollarea-viewport="true" style="overflow: scroll; overscroll-behavior-inline: none;"><div class="m_b1336c6 mantine-ScrollArea-content"><div class="m_9f507240 mantine-CodeHighlight-codeWrapper"><div class="m_15f77410 mantine-CodeHighlight-lineNumbers" style="font-size: 0.7em; line-height: 1.94286;"><div>1</div><div>2</div></div><pre class="m_2c47c4fd mantine-CodeHighlight-pre" style="padding: 0px; font-size: 0.8em; tab-size: 4;"><code class="m_5caae6d3 mantine-CodeHighlight-code" style="font-size: inherit; line-height: 1.7;"><span class="line"><span style="color:#C5C8C6">$ curl -s https://</span><span style="color:#676867">&lt;</span><span style="color:#C5C8C6">ваш-сервис</span><span style="color:#676867">&gt;</span><span style="color:#C5C8C6">.onrender.com/api/health</span></span>
+    <span class="line"><span style="color:#C5C8C6">{"status":"ok"}</span></span></code></pre></div></div></div></div><button class="mantine-focus-auto m_c9378bc2 mantine-CodeHighlight-showCodeButton m_87cf2631 mantine-UnstyledButton-root" data-hidden="true" type="button">Expand code</button></div></div>
+    </li>
+    <li>
+    <p>Откройте адрес в браузере и пройдите сценарий целиком: зарегистрируйтесь, наберите корзину, оформите заказ, найдите его в кабинете.</p>
+    </li>
+    <li>
+    <p>Добавьте ссылку на развёрнутое приложение в <em>README.md</em>.</p>
+    </li>
+    </ol>
+    <h3 id="heading-3-6">Подсказки</h3>
+    <ul>
+    <li>Первый запрос к сервису на бесплатном плане идёт долго: неактивный сервис засыпает и просыпается около минуты. Это не ошибка деплоя.</li>
+    <li>Бесплатная база на Render живёт ограниченное время, дальше её нужно продлевать или заводить новую. Держите это в голове, когда будете показывать проект.</li>
+    <li>Render подключается только к GitHub, GitLab и Bitbucket. Репозиторий должен быть в одном из них.</li>
+    <li>Если деплой упал, читайте логи сборки и логи запуска — это разные вкладки. Ошибка миграций видна только в логах запуска.</li>
+    <li>Приложение обязано слушать <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>0.0.0.0</span></span></code>, а не <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>127.0.0.1</span></span></code>: иначе Render не увидит открытый порт и деплой останется в статусе ожидания.</li>
+    <li>Если после перезапуска сервиса пользователи разлогинились, посмотрите, где хранятся сессии. Сессии в памяти процесса пропадают при каждом перезапуске, а таблица в базе их переживает.</li>
+    </ul>
+    <h3 id="heading-3-7">Результат шага</h3>
+    <p>Магазин доступен в интернете по HTTPS, работает с настоящей базой и обновляется автоматически при пуше.</p></div>

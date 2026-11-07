@@ -1,0 +1,44 @@
+<div class="m_d08caa0 mantine-Typography-root"><h2 id="heading-2-1">Главная страница и промо-блоки</h2>
+    <p>На корневом адресе магазина — не каталог, а главная страница с промо-блоками. Каждый блок это заголовок, текст и товар, на страницу которого блок ведёт. Шаг небольшой, но в нём два содержательных решения.</p>
+    <p><strong>Промо-блоки хранятся в базе, а не в вёрстке.</strong> Контент, который меняется без релиза, — это данные. Тексты в разметке пришлось бы править кодом и выкладывать заново, а витрину магазина меняют каждую неделю.</p>
+    <p><strong>Товар приходит внутри блока.</strong> Ответ <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>GET /api/promos</span></span></code> содержит товар целиком, а не только его идентификатор. Иначе фронтенд на каждый блок делал бы отдельный запрос за товаром — это классическая проблема N+1: одна страница вместо одного запроса делает столько, сколько на ней блоков.</p>
+    <h3 id="heading-3-2">Ссылки</h3>
+    <ul>
+    <li><a class="mantine-focus-auto m_849cf0da m_b6d8b162 mantine-Text-root mantine-Anchor-root" data-underline="hover" href="https://www.postgresql.org/docs/current/tutorial-join.html" rel="noopener noreferrer" target="_blank" style="overflow-wrap: anywhere; word-break: break-word; font-size: inherit; text-decoration: underline;">PostgreSQL: соединения таблиц</a></li>
+    </ul>
+    <h3 id="heading-3-3">Требования</h3>
+    <ul>
+    <li><code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>GET /api/promos</span></span></code> отдаёт массив блоков: <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>{ id, title, text, product }</span></span></code>, где <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>product</span></span></code> — товар в том же виде, что в каталоге.</li>
+    <li>Промо-блоки лежат в базе и заливаются вместе с данными каталога.</li>
+    <li>Блоков не меньше двух, каждый — на <strong>доступный</strong> товар.</li>
+    <li>Один товар не участвует в двух блоках. Проще всего гарантировать это уникальным индексом по идентификатору товара в таблице блоков — заодно заливка становится идемпотентной.</li>
+    <li>Пустой список — <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>200</span></span></code> и <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>[]</span></span></code>: главная должна оставаться рабочей.</li>
+    </ul>
+    <h3 id="heading-3-4">Задачи</h3>
+    <ol>
+    <li>
+    <p>Добавьте таблицу промо-блоков: заголовок, текст, ссылка на товар, уникальность по товару.</p>
+    </li>
+    <li>
+    <p>Дополните заливку данных: минимум два блока на доступные товары.</p>
+    </li>
+    <li>
+    <p>Реализуйте <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>GET /api/promos</span></span></code> <strong>одним</strong> запросом с соединением таблиц — товар отдавайте вложенным объектом. Захардкоженный список промо-блоков после этого удалите.</p>
+    </li>
+    <li>
+    <p>Напишите тест на API: блоков не меньше двух, у каждого есть вложенный товар со всеми полями, все товары доступны.</p>
+    </li>
+    <li>
+    <p>Откройте главную: блоки видны, клик по блоку ведёт на страницу своего товара.</p>
+    <div class=""><div class="m_e597c321 mantine-CodeHighlight-codeHighlight" dir="ltr" style="margin-bottom: var(--mantine-spacing-lg);"><div class="m_be7e9c9c mantine-CodeHighlight-controls"><button class="mantine-focus-auto mantine-active m_d498bab7 mantine-CodeHighlight-control m_8d3f4000 mantine-ActionIcon-root m_87cf2631 mantine-UnstyledButton-root" data-variant="none" type="button" aria-label="Copy code" style="--ai-bg: transparent; --ai-hover: transparent; --ai-color: inherit; --ai-bd: none;"><span class="m_8d3afb97 mantine-ActionIcon-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path><path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path></svg></span></button></div><div class="m_f744fd40 mantine-CodeHighlight-scrollarea m_d57069b5 mantine-ScrollArea-root" dir="ltr" style="--scrollarea-scrollbar-size: calc(0.25rem * var(--mantine-scale)); --sa-corner-width: 0px; --sa-corner-height: 0px;"><div class="m_c0783ff9 mantine-ScrollArea-viewport" data-scrollbars="xy" data-scrollarea-viewport="true" style="overflow: scroll; overscroll-behavior-inline: none;"><div class="m_b1336c6 mantine-ScrollArea-content"><div class="m_9f507240 mantine-CodeHighlight-codeWrapper"><div class="m_15f77410 mantine-CodeHighlight-lineNumbers" style="font-size: 0.7em; line-height: 1.94286;"><div>1</div><div>2</div></div><pre class="m_2c47c4fd mantine-CodeHighlight-pre" style="padding: 0px; font-size: 0.8em; tab-size: 4;"><code class="m_5caae6d3 mantine-CodeHighlight-code" style="font-size: inherit; line-height: 1.7;"><span class="line"><span style="color:#CE6700">curl</span><span style="color:#8080FF"> -s</span><span style="color:#9AA83A"> http://localhost:8080/api/promos</span><span style="color:#676867"> |</span><span style="color:#CE6700"> head</span><span style="color:#8080FF"> -c</span><span style="color:#6089B4"> 200</span></span>
+    <span class="line"><span style="color:#9A9B99"># [{"id":"1","title":"…","text":"…","product":{"id":"1","name":"…", …</span></span></code></pre></div></div></div></div><button class="mantine-focus-auto m_c9378bc2 mantine-CodeHighlight-showCodeButton m_87cf2631 mantine-UnstyledButton-root" data-hidden="true" type="button">Expand code</button></div></div>
+    </li>
+    </ol>
+    <h3 id="heading-3-5">Подсказки</h3>
+    <ul>
+    <li>Собирать вложенный объект из плоской строки результата удобно в одном месте — там же, где вы приводите типы для остальных ответов. Иначе <code class="m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight m_e597c321 mantine-CodeHighlight-codeHighlight m_dfe9c588 mantine-InlineCodeHighlight-inlineCodeHighlight" style="font-size: 0.8em; margin-bottom: var(--mantine-spacing-lg);"><span class="line"><span>price.amount</span></span></code> окажется строкой только в промо-блоках, и главная сломается, а каталог нет.</li>
+    <li>Заливка блоков должна выполняться после товаров: блок ссылается на товар.</li>
+    <li>Не отдавайте недоступные товары в блоках: фронтенд ведёт с блока на карточку, а купить оттуда ничего нельзя — сценарий обрывается.</li>
+    </ul>
+    <h3 id="heading-3-6">Результат шага</h3>
+    <p>Главная страница показывает промо-блоки из вашей базы, каждый ведёт на свой товар, и всё это одним запросом к API.</p></div>
