@@ -1,0 +1,413 @@
+openapi: 3.0.0
+info:
+  title: Online Store API
+  version: 0.0.0
+tags: []
+paths:
+  /api/categories:
+    get:
+      operationId: API_categories
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /api/health:
+    get:
+      operationId: API_health
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                  - status
+  /api/me:
+    get:
+      operationId: API_me
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/orders:
+    post:
+      operationId: API_createOrder
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+    get:
+      operationId: API_orders
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+  /api/orders/{id}:
+    get:
+      operationId: API_order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /api/products:
+    get:
+      operationId: API_products
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+              q:
+                type: string
+              priceMin:
+                type: integer
+                format: int32
+              priceMax:
+                type: integer
+                format: int32
+              available:
+                type: boolean
+              page:
+                type: integer
+                format: int32
+              perPage:
+                type: integer
+                format: int32
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPage'
+  /api/products/{id}:
+    get:
+      operationId: API_product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  /api/promos:
+    get:
+      operationId: API_promos
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Promo'
+  /api/session:
+    post:
+      operationId: API_login
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+    delete:
+      operationId: API_logout
+      parameters: []
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+  /api/users:
+    post:
+      operationId: API_register
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+components:
+  schemas:
+    CartItem:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+    Category:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+    Credentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Money:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: integer
+          format: int32
+        currency:
+          type: string
+    Order:
+      type: object
+      required:
+        - id
+        - status
+        - items
+        - shipping
+        - total
+        - createdAt
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shipping:
+          $ref: '#/components/schemas/ShippingDetails'
+        total:
+          $ref: '#/components/schemas/Money'
+        createdAt:
+          type: string
+          format: date-time
+    OrderInput:
+      type: object
+      required:
+        - items
+        - shipping
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        shipping:
+          $ref: '#/components/schemas/ShippingDetails'
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - productName
+        - priceAtPurchase
+        - quantity
+      properties:
+        productId:
+          type: string
+        productName:
+          type: string
+        priceAtPurchase:
+          $ref: '#/components/schemas/Money'
+        quantity:
+          type: integer
+          format: int32
+    PageMeta:
+      type: object
+      required:
+        - page
+        - perPage
+        - total
+        - totalPages
+      properties:
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+    Problem:
+      type: object
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+    Product:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - description
+        - price
+        - categoryId
+        - available
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          $ref: '#/components/schemas/Money'
+        categoryId:
+          type: string
+        imageUrl:
+          type: string
+        available:
+          type: boolean
+    ProductPage:
+      type: object
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        meta:
+          $ref: '#/components/schemas/PageMeta'
+    Promo:
+      type: object
+      required:
+        - id
+        - title
+        - text
+        - product
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        text:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+    ShippingDetails:
+      type: object
+      required:
+        - method
+        - recipientName
+        - phone
+      properties:
+        method:
+          type: string
+        recipientName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+    User:
+      type: object
+      required:
+        - id
+        - email
+      properties:
+        id:
+          type: string
+        email:
+          type: string
