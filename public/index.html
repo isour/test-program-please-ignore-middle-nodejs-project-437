@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Интернет-магазин комплектующих</title>
     <script src="https://js-de.sentry-cdn.com/df41fecadd3ecc069e8238444af676cc.min.js" crossorigin="anonymous"></script>
+    <script>
+      window.addEventListener('error', event => {
+        if (window.Sentry) window.Sentry.captureException(event.error || new Error(event.message))
+      })
+      window.addEventListener('unhandledrejection', event => {
+        if (window.Sentry) window.Sentry.captureException(event.reason)
+      })
+    </script>
     <script type="module" crossorigin src="/assets/index-aHj-6CWw.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-RtGtTCML.css">
   </head>
