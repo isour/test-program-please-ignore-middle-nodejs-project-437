@@ -70,6 +70,14 @@ SENTRY_DSN=https://...@o....ingest.sentry.io/...
 
 Приложение читает `SENTRY_DSN` из окружения. Если переменная не задана, приложение продолжает работать без отправки событий в Sentry. В production не добавляйте DSN в исходники и не коммитьте его в Git.
 
+Чтобы проверить отправку серверных ошибок, выполните временный скрипт с тем же `SENTRY_DSN` в окружении:
+
+```bash
+node --input-type=module -e "import * as Sentry from '@sentry/node'; Sentry.init({ dsn: process.env.SENTRY_DSN }); Sentry.captureException(new Error('Test Sentry error')); await Sentry.flush(2000)"
+```
+
+После этого откройте **Issues** в Sentry. Ошибки браузера требуют отдельного подключения `@sentry/react` во фронтенде; серверный `SENTRY_DSN` их автоматически не перехватывает.
+
 Проверка доступности:
 
 ```bash

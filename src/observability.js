@@ -5,7 +5,10 @@ export function initSentry() {
 }
 
 export function captureError(error) {
-  if (process.env.SENTRY_DSN) Sentry.captureException(error)
+  if (process.env.SENTRY_DSN) {
+    Sentry.captureException(error)
+    Sentry.flush(2000).catch(() => {})
+  }
 }
 
 export { Sentry }
